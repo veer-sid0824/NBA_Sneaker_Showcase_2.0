@@ -14,6 +14,22 @@ interface AuthApiResponse {
     user: User;
 }
 
+const AUTH_SIGNUP_PATH = (import.meta.env.VITE_AUTH_SIGNUP_PATH ?? '/api/signup').trim();
+const AUTH_SIGNIN_PATH = (import.meta.env.VITE_AUTH_SIGNIN_PATH ?? '/api/signin').trim();
+
+const postAuth = async (
+    path: string,
+    payload: Record<string, string>,
+): Promise<Response> => {
+    const requestOptions: RequestInit = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+    };
+
+    return fetch(getApiUrl(path), requestOptions);
+};
+
 const getErrorMessage = async (response: Response): Promise<string> => {
     try {
         const data = await response.json();
@@ -22,6 +38,9 @@ const getErrorMessage = async (response: Response): Promise<string> => {
         return `Request failed with status ${response.status}`;
     }
 };
+
+const getNetworkErrorMessage = () =>
+    'Unable to reach the auth server. For local development, verify `VITE_API_BASE_URL` and Vite proxy settings.';
 
 const withAvatar = (user: User): User => ({
     ...user,
@@ -49,11 +68,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const login = async (email: string, password: string, rememberMe: boolean = true) => {
         setIsLoading(true);
         try {
-            const response = await fetch(getApiUrl('/api/auth/signin'), {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password }),
-            });
+            let response: Response;
+            try {
+                response = await postAuth(AUTH_SIGNIN_PATH, { email, password });
+            } catch {
+                throw new Error(getNetworkErrorMessage());
+            }
 
             if (!response.ok) {
                 throw new Error(await getErrorMessage(response));
@@ -79,11 +99,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const signup = async (fullName: string, email: string, password: string) => {
         setIsLoading(true);
         try {
-            const response = await fetch(getApiUrl('/api/auth/signup'), {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ fullName, email, password }),
-            });
+            let response: Response;
+            try {
+                response = await postAuth(AUTH_SIGNUP_PATH, { fullName, email, password });
+            } catch {
+                throw new Error(getNetworkErrorMessage());
+            }
 
             if (!response.ok) {
                 throw new Error(await getErrorMessage(response));
