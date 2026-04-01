@@ -1,12 +1,12 @@
-﻿import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { User, AuthContextType } from '../types';
+import { getApiUrl } from '../utils/api';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const AUTH_USER_STORAGE_KEY = 'sneakers_auth_user';
 const AUTH_TOKEN_STORAGE_KEY = 'sneakers_auth_token';
 const REMEMBER_EMAIL_STORAGE_KEY = 'sneakers_remember_email';
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
 interface AuthApiResponse {
     message: string;
@@ -49,7 +49,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const login = async (email: string, password: string, rememberMe: boolean = true) => {
         setIsLoading(true);
         try {
-            const response = await fetch(`${API_BASE_URL}/api/auth/signin`, {
+            const response = await fetch(getApiUrl('/api/auth/signin'), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password }),
@@ -79,7 +79,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const signup = async (fullName: string, email: string, password: string) => {
         setIsLoading(true);
         try {
-            const response = await fetch(`${API_BASE_URL}/api/auth/signup`, {
+            const response = await fetch(getApiUrl('/api/auth/signup'), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ fullName, email, password }),
