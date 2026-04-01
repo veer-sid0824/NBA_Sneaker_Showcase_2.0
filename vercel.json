@@ -1,5 +1,4 @@
 {
-  "root": "sneakers-react-app",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "devCommand": "npm run dev",
