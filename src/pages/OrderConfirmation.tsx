@@ -15,9 +15,7 @@ const OrderConfirmation = () => {
 
     useEffect(() => {
         const loadOrder = async () => {
-            const lastOrder = localStorage.getItem('lastOrder');
-            const fallbackOrder = lastOrder ? (JSON.parse(lastOrder) as Order) : null;
-            const queryOrderId = searchParams.get('orderId') || fallbackOrder?.orderId;
+            const queryOrderId = searchParams.get('orderId');
 
             if (!queryOrderId) {
                 navigate('/');
@@ -33,13 +31,8 @@ const OrderConfirmation = () => {
                 }
 
                 setOrder(payload.order as Order);
-                localStorage.setItem('lastOrder', JSON.stringify(payload.order));
             } catch (apiError) {
-                if (fallbackOrder && fallbackOrder.orderId === queryOrderId) {
-                    setOrder(fallbackOrder);
-                } else {
-                    setError(apiError instanceof Error ? apiError.message : 'Unable to load order');
-                }
+                setError(apiError instanceof Error ? apiError.message : 'Unable to load order');
             } finally {
                 setIsLoading(false);
             }

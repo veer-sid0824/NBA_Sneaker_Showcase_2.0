@@ -81,30 +81,35 @@ const Payment = () => {
         setIsLoading(true);
 
         try {
-            const response = await fetch(getApiUrl('/api/payments/checkout'), {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
+                const url = getApiUrl('/api/payments/checkout');
+                const body = JSON.stringify({
                     ...formData,
                     items: cartItems,
                     total: totalAmount,
-                }),
-            });
+                });
 
-            const payload = await response.json();
+                console.debug('[Payment] POST', url, JSON.parse(body));
+
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body,
+                });
+
+                let payload: any = {};
+                try {
+                    payload = await response.json();
+                } catch (err) {
+                    console.error('[Payment] Failed to parse JSON response', err);
+                }
             if (!response.ok) {
-                throw new Error(payload?.message || 'Payment failed');
+                    console.error('[Payment] Server returned error', response.status, payload);
+                    throw new Error(payload?.message || 'Payment failed');
             }
 
             const order: Order = payload.order;
 
             setIsSuccess(true);
-            localStorage.setItem('lastOrder', JSON.stringify(order));
-
-            const allOrders = JSON.parse(localStorage.getItem('sneakers_orders') || '[]');
-            allOrders.push(order);
-            localStorage.setItem('sneakers_orders', JSON.stringify(allOrders));
-
             clearCart();
             setTimeout(() => {
                 navigate(`/order-confirmation?orderId=${order.orderId}`);
