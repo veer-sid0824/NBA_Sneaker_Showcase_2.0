@@ -14,8 +14,8 @@ interface AuthApiResponse {
     user: User;
 }
 
-const AUTH_SIGNUP_PATH = (import.meta.env.VITE_AUTH_SIGNUP_PATH ?? '/api/signup').trim();
-const AUTH_SIGNIN_PATH = (import.meta.env.VITE_AUTH_SIGNIN_PATH ?? '/api/signin').trim();
+const AUTH_SIGNUP_PATH = (import.meta.env.VITE_AUTH_SIGNUP_PATH ?? '/api/auth/signup').trim();
+const AUTH_SIGNIN_PATH = (import.meta.env.VITE_AUTH_SIGNIN_PATH ?? '/api/auth/signin').trim();
 
 const postAuth = async (
     path: string,

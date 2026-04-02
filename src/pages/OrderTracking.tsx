@@ -36,7 +36,6 @@ const OrderTracking = () => {
 
                 const nextOrder = payload.order as Order;
                 setOrder(nextOrder);
-                localStorage.setItem('lastOrder', JSON.stringify(nextOrder));
 
                 const statusIndex = ORDER_STATUS_STEPS.findIndex((step) => step.id === nextOrder.status);
                 setCurrentStep(statusIndex >= 0 ? statusIndex : 0);
